@@ -26,7 +26,7 @@ exports.openDB = () => {
  * @param {json} data object containing json to write on file
  * @return {boolean} indicator if save succeeds
  */
-exports.saveDB = (data) => {
+exports.updateDB = (data) => {
     try {
         fs.writeFileSync(userDB, JSON.stringify(data, null, '   '), 'utf8');
 
