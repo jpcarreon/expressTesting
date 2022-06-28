@@ -28,7 +28,15 @@ exports.createUser = (req, res) => {
         
         //  parse db and add a new user
         var file = JSON.parse(data);
-        file['users'].push(newUser)
+
+        for (let i = 0; i < file['users'].length; i++) {
+            if (file['users'][i].username == newUser.username) {
+                console.log('Duplicate User!')
+                return res.status(400).send({ 'success': false });
+            }
+        }
+
+        file['users'].push(newUser);
 
         //  write changes to db with \t indentation
         fs.writeFile(userDB, JSON.stringify(file, null, '   '), 'utf8', (err) => {
