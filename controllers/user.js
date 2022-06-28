@@ -1,4 +1,8 @@
-const utils = require("./utils");
+const fs = require('fs');
+const path = require('path');
+
+const userDB = path.join(__dirname, '..', 'data', 'user.json');
+const utils = require('./utils');
 
 // controllers
 exports.findUser = (req,res) => {
@@ -9,12 +13,32 @@ exports.findUser = (req,res) => {
 }
 
 exports.createUser = (req, res) => {
-    const User = {
+    const newUser = {
         username: req.body.username,
         password: req.body.password
     }
 
-    utils.testFunction();
+    //  read user db
+    fs.readFile(userDB, 'utf8', (err, data) => {
+        //  failed to read file
+        if (err) {
+            console.log(err);
+            return res.status(400).send({ 'success': false });
+        }
+        
+        //  parse db and add a new user
+        var file = JSON.parse(data);
+        file['users'].push(newUser)
 
-    res.status(201).send(User);
+        //  write changes to db with \t indentation
+        fs.writeFile(userDB, JSON.stringify(file, null, '   '), 'utf8', (err) => {
+            //  failed to write to file
+            if (err) {
+                console.log(err);
+                return res.status(500).send({ 'success': false });
+            }
+
+            res.status(201).send({ 'success': true });
+        })
+    });
 }
