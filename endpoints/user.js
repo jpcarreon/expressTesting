@@ -5,7 +5,7 @@ const Router = require('express').Router;
 const User = Router();
 
 // access controllers
-User.get('/', UserController.findUser); // localhost:3001/user/username
+User.get('/', UserController.findUser); // localhost:3001/user/
 User.post('/', UserController.createUser);
 
 module.exports = User;
