@@ -155,12 +155,17 @@ exports.deleteUser = (req, res) => {
     if (!file) 
         return res.status(404).send({ 'success': false, 'message': 'Failed to Open DB' });
     
-    const foundUser = utils.findUser(file['users'], req.body.username);
+    const foundUser = utils.findUser(file['users'], req.query.username);
 
     if (foundUser < 0)
         return res.status(404).send({ 'success': false, 'message': 'User not Found' });
 
-    res.send('OK');
+    file['users'].splice(foundUser, 1);
+
+    if (!utils.updateDB(file))
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
+    
+    res.status(200).send({ 'success': true });
 }
 
 exports.loginUser = (req, res) => {
