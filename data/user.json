@@ -2,7 +2,11 @@
    "users": [
       {
          "username": "Sylvester",
-         "password": "Ehrenfest06"
+         "password": "newPassword23"
+      },
+      {
+         "username": "Maria",
+         "password": "Santos"
       }
    ]
 }
