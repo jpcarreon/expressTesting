@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const jwt = require("jsonwebtoken");
 
 const userDB = path.join(__dirname, '..', 'data', 'user.json');
 const utils = require('./utils');
@@ -114,4 +115,62 @@ exports.updateUser = (req, res) => {
         });
         
     });
+}
+
+exports.loginUser = (req, res) => {
+    //  check if fields are complete
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).send({
+            'success': false,
+            'message': 'Missing Required Fields'
+        })
+    }
+
+    //  open the DB to look for the user
+    const file = utils.openDB();
+    if (!file) 
+        return res.status(404).send({ 'success': false, 'message': 'Failed to Open DB' });
+    
+    const foundUser = utils.findUser(file['users'], req.body.username);
+
+    if (foundUser < 0)
+        return res.status(404).send({ 'success': false, 'message': 'User not Found' });
+    
+    //  verify if password in body matches the password in the DB
+    if (file['users'][foundUser].password != req.body.password)
+        return res.status(404).send({ 'success': false, 'message': 'Wrong password' });
+    
+    //  sign a token for login
+    const token = jwt.sign(req.body.username, "SECRET_KEY");
+    file['users'][foundUser]['token'] = token;
+
+    if (!utils.updateDB(file)) 
+        return res.status(500).send({ 'success': false })
+
+    res.status(200).send({
+        'success': true,
+        'token': token
+    });
+}
+
+exports.logoutUser = (req, res) => {
+    let token = req.header('Authorization');
+    
+    //  check if there is Authorization provided
+    if (!token)
+        return res.status(400).send({
+            'success': false,
+            'message': 'Missing Required Fields' 
+         });
+    //  cut the Bearer string before authorization token
+    else token = token.slice(7)
+
+    //  check if authorization token is valid
+    if (utils.verifyToken(token, true)) 
+        res.status(200).send({ 'success': true })
+    else 
+        res.status(401).send({
+            'success': false,
+            'message': 'Invalid Token Provided' 
+         });
 }
