@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const jwt = require("jsonwebtoken");
 
 const userDB = path.join(__dirname, '..', 'data', 'user.json');
 
@@ -51,4 +52,29 @@ exports.findUser = (db, username) => {
     })
 
     return db.indexOf(found);
+}
+
+exports.verifyToken = (token, logout = false) => {
+    try {
+        const user = jwt.verify(token, 'SECRET_KEY');
+        var file = this.openDB();
+        var found = this.findUser(file['users'], user);
+
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+    
+    if (found < 0 || file['users'][found].token != token)
+        return false;
+    else {
+        if (logout) {
+            file['users'][found].token = '';
+            this.updateDB(file);
+        }
+            
+        return true;
+    }
+        
+
 }
