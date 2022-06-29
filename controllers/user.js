@@ -48,73 +48,84 @@ exports.findUser = (req,res) => {
  *  - Creates a user
  */
 exports.createUser = (req, res) => {
+    // check body values
+    if(req.body.username == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(req.body.password == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(req.body.email == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(req.body.firstName == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(req.body.lastName == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+
     const newUser = {
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        token: "",
     }
 
-    
     const file = utils.openDB();
     if (!file) 
-        return res.status(400).send({ 'success': false });
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
     
     //  look through users for duplicates
     if (utils.findUser(file['users'], newUser.username) >= 0) {
-        console.log('Duplicate User!')
-        return res.status(400).send({ 'success': false });
+        console.log('Duplicate User!');
+        return res.status(409).send({ 'success': false, 'message': 'Duplicate user credentials' });
     }
     
     //  add new user
     file['users'].push(newUser);
 
-    if (!utils.updateDB(file)) 
-        return res.status(500).send({ 'success': false })
+    if (!utils.updateDB(file))
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
     
-
-    res.status(201).send({ 'success': true });
+    res.status(201).send({ 'success': true, 'message': 'Successfully created user' });
 }
+
 /**
  * [PUT]
- * - Updates a user's password
+ * - Updates User entity fields
  */
 exports.updateUser = (req, res) => {
-    var userId = req.query.username;
-    var newData = req.body.newData;
 
-    function userFinder(currUser){
-        if(currUser.username == userId){
-            return currUser;
-        }
-    }
+    var id = req.body.username;
+    let token = req.header('Authorization');
 
-    fs.readFile(userDB, 'utf8', (err, data) => {
-
-        if (err) {
-            console.log(err);
-            return res.status(400).send({ 'success': false });
-        }
-        
-        var file = JSON.parse(data);
-        var foundUser = file['users'].find(userFinder);
-
-        if(foundUser == null){
-            return res.send({ 'success': false });
-        }
-
-        // replace content
-        var index = file['users'].indexOf(foundUser);
-        file['users'][index].password = newData;
-
-        // save changes
-        fs.writeFile(userDB, JSON.stringify(file, null, '   '), 'utf8', (err) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).send({ 'success': false });
-            }
-            return res.status(201).send({ 'success': true });
+    if (!token || !id) 
+        return res.status(400).send({
+            'success': false,
+            'message': 'Missing Required Fields' 
         });
-        
-    });
+    else token = token.slice(7);
+
+    if (!utils.verifyToken(token))
+        return res.status(401).send({
+            'success': false,
+            'message': 'Invalid Token Provided' 
+        });
+
+    const file = utils.openDB();
+    if (!file) 
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
+
+    const index = utils.findUser(file['users'], id);
+    
+    // check if retrieved valid index
+    if (index == -1)
+        return res.status(404).send({ 'success': false, 'message': 'User not found' });
+
+    // update fields
+    file['users'][index].password = req.body.password ? req.body.password : file['users'][index].password;
+    file['users'][index].email = req.body.email ? req.body.email : file['users'][index].email;
+    file['users'][index].firstName = req.body.firstName ? req.body.firstName : file['users'][index].firstName;
+    file['users'][index].lastName = req.body.lastName ? req.body.lastName : file['users'][index].lastName;
+    
+    // save changes to DB
+    if (!utils.updateDB(file))
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
+    
+    res.status(201).send({ 'success': true, 'message': 'Successfully updated user' });
 }
 
 exports.deleteUser = (req, res) => {
@@ -174,7 +185,7 @@ exports.loginUser = (req, res) => {
     //  verify if password in body matches the password in the DB
     if (file['users'][foundUser].password != req.body.password)
         return res.status(404).send({ 'success': false, 'message': 'Wrong password' });
-    
+
     //  sign a token for login
     const token = jwt.sign(req.body.username, "SECRET_KEY");
     file['users'][foundUser]['token'] = token;
