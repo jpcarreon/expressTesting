@@ -58,16 +58,15 @@ exports.createUser = (req, res) => {
         return res.status(400).send({ 'success': false });
     
     //  look through users for duplicates
-    for (let i = 0; i < file['users'].length; i++) {
-        if (file['users'][i].username == newUser.username) {
-            console.log('Duplicate User!')
-            return res.status(400).send({ 'success': false });
-        }
+    if (utils.findUser(file['users'], newUser.username) >= 0) {
+        console.log('Duplicate User!')
+        return res.status(400).send({ 'success': false });
     }
+    
     //  add new user
     file['users'].push(newUser);
 
-    if (!utils.saveDB(file)) 
+    if (!utils.updateDB(file)) 
         return res.status(500).send({ 'success': false })
     
 

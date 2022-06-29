@@ -37,3 +37,18 @@ exports.updateDB = (data) => {
         return false;
     }
 }
+
+/**
+ * Looks through array for an object with matching username
+ * Returns index of found value
+ * @param {array} db array of users
+ * @param {string} username username to find
+ * @return {int} index of value; -1 if not in array
+ */
+exports.findUser = (db, username) => {
+    var found = db.find((currUser) => {
+        if (currUser.username == username) return currUser;
+    })
+
+    return db.indexOf(found);
+}
