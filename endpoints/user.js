@@ -8,6 +8,7 @@ const User = Router();
 User.get('/', UserController.findUser); // localhost:3001/user/
 User.post('/', UserController.createUser);
 User.put('/', UserController.updateUser);
+User.delete('/', UserController.deleteUser);
 User.post('/login', UserController.loginUser);
 User.post('/logout', UserController.logoutUser);
 

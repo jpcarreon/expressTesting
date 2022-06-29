@@ -78,11 +78,11 @@ exports.createUser = (req, res) => {
  * - Updates a user's password
  */
 exports.updateUser = (req, res) => {
-    var id = req.query.username;
+    var userId = req.query.username;
     var newData = req.body.newData;
 
     function userFinder(currUser){
-        if(currUser.username == id){
+        if(currUser.username == userId){
             return currUser;
         }
     }
@@ -115,6 +115,41 @@ exports.updateUser = (req, res) => {
         });
         
     });
+}
+
+exports.deleteUser = (req, res) => {
+    let token = req.header('Authorization');
+
+    if (!token || !req.query.username) 
+        return res.status(400).send({
+            'success': false,
+            'message': 'Missing Required Fields' 
+        });
+    else token = token.slice(7);
+
+    if (!utils.verifyToken(token))
+        return res.status(401).send({
+            'success': false,
+            'message': 'Invalid Token Provided' 
+        });
+    
+    if (req.query.username == jwt.verify(token, 'SECRET_KEY'))
+        return res.status(403).send({
+            'success': false,
+            'message': 'Cannot Delete User' 
+        });
+    
+    //  open the DB to look for the user to delete
+    const file = utils.openDB();
+    if (!file) 
+        return res.status(404).send({ 'success': false, 'message': 'Failed to Open DB' });
+    
+    const foundUser = utils.findUser(file['users'], req.body.username);
+
+    if (foundUser < 0)
+        return res.status(404).send({ 'success': false, 'message': 'User not Found' });
+
+    res.send('OK');
 }
 
 exports.loginUser = (req, res) => {
