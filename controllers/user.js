@@ -78,11 +78,11 @@ exports.createUser = (req, res) => {
  * - Updates a user's password
  */
 exports.updateUser = (req, res) => {
-    var id = req.query.username;
+    var userId = req.query.username;
     var newData = req.body.newData;
 
     function userFinder(currUser){
-        if(currUser.username == id){
+        if(currUser.username == userId){
             return currUser;
         }
     }
