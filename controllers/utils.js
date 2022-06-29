@@ -54,9 +54,20 @@ exports.findUser = (db, username) => {
     return db.indexOf(found);
 }
 
+
+/**
+ * Verify given token if it is valid
+ * Returns true/false
+ * @param {string} token token to verify
+ * @param {boolean} logout if verification is done to logout (default: false)
+ * @return {boolean} condition if token is valid or not
+ */
 exports.verifyToken = (token, logout = false) => {
     try {
+        //  verify token
         const user = jwt.verify(token, 'SECRET_KEY');
+
+        //  look for user in DB
         var file = this.openDB();
         var found = this.findUser(file['users'], user);
 
@@ -65,9 +76,11 @@ exports.verifyToken = (token, logout = false) => {
         return false;
     }
     
+    //  User is not found or token is invalid
     if (found < 0 || file['users'][found].token != token)
         return false;
     else {
+        //  user logout; wipe token field in DB
         if (logout) {
             file['users'][found].token = '';
             this.updateDB(file);

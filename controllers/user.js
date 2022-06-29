@@ -118,6 +118,7 @@ exports.updateUser = (req, res) => {
 }
 
 exports.loginUser = (req, res) => {
+    //  check if fields are complete
     if (!req.body.username || !req.body.password) {
         return res.status(400).send({
             'success': false,
@@ -125,6 +126,7 @@ exports.loginUser = (req, res) => {
         })
     }
 
+    //  open the DB to look for the user
     const file = utils.openDB();
     if (!file) 
         return res.status(404).send({ 'success': false, 'message': 'Failed to Open DB' });
@@ -134,9 +136,11 @@ exports.loginUser = (req, res) => {
     if (foundUser < 0)
         return res.status(404).send({ 'success': false, 'message': 'User not Found' });
     
+    //  verify if password in body matches the password in the DB
     if (file['users'][foundUser].password != req.body.password)
         return res.status(404).send({ 'success': false, 'message': 'Wrong password' });
     
+    //  sign a token for login
     const token = jwt.sign(req.body.username, "SECRET_KEY");
     file['users'][foundUser]['token'] = token;
 
@@ -152,13 +156,16 @@ exports.loginUser = (req, res) => {
 exports.logoutUser = (req, res) => {
     let token = req.header('Authorization');
     
+    //  check if there is Authorization provided
     if (!token)
         return res.status(400).send({
             'success': false,
             'message': 'Missing Required Fields' 
          });
+    //  cut the Bearer string before authorization token
     else token = token.slice(7)
 
+    //  check if authorization token is valid
     if (utils.verifyToken(token, true)) 
         res.status(200).send({ 'success': true })
     else 
