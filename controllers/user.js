@@ -88,7 +88,22 @@ exports.createUser = (req, res) => {
  * - Updates User entity fields
  */
 exports.updateUser = (req, res) => {
+
     var id = req.body.username;
+    let token = req.header('Authorization');
+
+    if (!token || !id) 
+        return res.status(400).send({
+            'success': false,
+            'message': 'Missing Required Fields' 
+        });
+    else token = token.slice(7);
+
+    if (!utils.verifyToken(token))
+        return res.status(401).send({
+            'success': false,
+            'message': 'Invalid Token Provided' 
+        });
 
     const file = utils.openDB();
     if (!file) 
@@ -170,7 +185,7 @@ exports.loginUser = (req, res) => {
     //  verify if password in body matches the password in the DB
     if (file['users'][foundUser].password != req.body.password)
         return res.status(404).send({ 'success': false, 'message': 'Wrong password' });
-    
+
     //  sign a token for login
     const token = jwt.sign(req.body.username, "SECRET_KEY");
     file['users'][foundUser]['token'] = token;
