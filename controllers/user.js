@@ -52,39 +52,26 @@ exports.createUser = (req, res) => {
         password: req.body.password
     }
 
-    //  read user db
-    fs.readFile(userDB, 'utf8', (err, data) => {
-        //  failed to read file
-        if (err) {
-            console.log(err);
-            return res.status(400).send({ 'success': false });
-        }
-        
-        //  parse db and add a new user
-        var file = JSON.parse(data);
+    
+    const file = utils.openDB();
+    if (!file) 
+        return res.status(400).send({ 'success': false });
+    
+    //  look through users for duplicates
+    if (utils.findUser(file['users'], newUser.username) >= 0) {
+        console.log('Duplicate User!')
+        return res.status(400).send({ 'success': false });
+    }
+    
+    //  add new user
+    file['users'].push(newUser);
 
-        for (let i = 0; i < file['users'].length; i++) {
-            if (file['users'][i].username == newUser.username) {
-                console.log('Duplicate User!')
-                return res.status(400).send({ 'success': false });
-            }
-        }
+    if (!utils.updateDB(file)) 
+        return res.status(500).send({ 'success': false })
+    
 
-        file['users'].push(newUser);
-
-        //  write changes to db with \t indentation
-        fs.writeFile(userDB, JSON.stringify(file, null, '   '), 'utf8', (err) => {
-            //  failed to write to file
-            if (err) {
-                console.log(err);
-                return res.status(500).send({ 'success': false });
-            }
-
-            res.status(201).send({ 'success': true });
-        })
-    });
+    res.status(201).send({ 'success': true });
 }
-
 /**
  * [PUT]
  * - Updates a user's password
