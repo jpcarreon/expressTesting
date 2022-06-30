@@ -47,6 +47,12 @@ components:
           type: string
         lastName:
           type: string
+      required:
+        - "username"
+        - "password"
+        - "email"
+        - "firstName"
+        - "lastName"
   securitySchemes:
     bearerAuth:
       type: http
@@ -59,13 +65,14 @@ paths:
     get:
       tags:
         - "General"
-      description: Look for a user
+      description: Returns a User entity with the matching username
       parameters:
         - in: path
           name: username 
           required: true
           schema:
             type: string
+          description: Id of the User object to be searched
       responses:
         '200':
           description: Successful Response 
@@ -83,19 +90,30 @@ paths:
                         type: string
                       password:
                         type: string
-        
-        '404':
-          description: ""
+                      email:
+                        type: string
+                      firstName: 
+                        type: string
+                      lastName:
+                        type: string
+        '400':
+          description: Missing id to be searched
           content:
             application/json:
               schema:
-                properties:
-                  success:
-                    type: boolean 
-                  message:
-                    type: string
-            
-                      
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Missing query id
+        '404':
+          description: Search returned no matching results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Search returned no matching results
   /user/:
     post:
       tags:
@@ -105,34 +123,92 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string 
-              required:
-                - "username"
-                - "password"
+              $ref: "#/components/schemas/User"
       responses:
         "201":
           description: Successful Response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-        "404":
-          description: Failed Response
+                $ref: "#/components/schemas/SuccessfulResponseMessage"
+              example:
+                success: true
+                message: User added successfully 
+        "400":
+          description: Missing field/s
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Missing field/s
+        "404":
+          description: Database Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Database access error
+        "409":
+          description: Attempted to add duplicate User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Attempted to add duplicate User
+    put:
+      tags:
+        - "General"
+      description: Updates a User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessfulResponseMessage"
+              example:
+                success: true
+                message: User credentials updated successfully
+        "400":
+          description: Malformed request. Missing required field
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Missing required field to find User to be updated
+        "401":
+          description: Given token invalid. Operation unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Operation unauthorized. Failed to process request
+        "404":
+          description: Failure to locate user to delete or failure on db operations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: "User not found. Cannot update."
     delete:
       tags:
         - "General"
@@ -151,71 +227,46 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-
+                $ref: "#/components/schemas/SuccessfulResponseMessage"
+              example:
+                success: true
+                message: Successfully deleted User
         "400":
           description: Malformed request. Missing required field or token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                
-                example:
-                  success: false
-                  message: "Missing Required Fields"
-
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: "Missing required field/s"
         "401":
-          description: Given token invalid.
+          description: Given token invalid. Operation unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                example:
-                  success: false
-                  message: "Invalid Token Provided"
-        
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: Operation unauthorized. Failed to process request
         "403":
           description: Attempting to delete your own account.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                example:
-                  success: false
-                  message: "Cannot Delete User"
-
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: "Cannot delete logged-in User"
         "404":
           description: Failure to locate user to delete or failure on db operations.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                example:
-                  success: false
-                  message: "User not Found"
+                $ref: "#/components/schemas/CommonError"
+              example:
+                success: false
+                message: "User not found. Cannot delete with no matches."
 
   /user/login:
     post:
