@@ -10,11 +10,43 @@ servers:
 
 components:
   schemas:
-    SuccessfulResponse:
+    SuccessfulResponseMessage:
       properties:
         success:
-          type: boolean 
-  
+          type: boolean
+          example: true
+        message:
+          type: string
+    SuccessfulResponseReturn:
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          description: dynamic entity (eg. token, queried object)
+    CommonError:
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Missing required field/s
+    User:
+      description: User entity schema
+      properties:
+        username: 
+          type: string
+          description: Entity immutable primary key
+        password:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
 
 paths:
   /user/{id}:
