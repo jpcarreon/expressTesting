@@ -47,6 +47,12 @@ components:
           type: string
         lastName:
           type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: Simple bearer auth
+      scheme: bearer
+      bearerFormat: JWT
 
 paths:
   /user/{id}:
@@ -127,6 +133,193 @@ paths:
                 properties:
                   success:
                     type: boolean
+    delete:
+      tags:
+        - "General"
+      description: Delete a User 
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: username 
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful Response. User was deleted in the db.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+        "400":
+          description: Malformed request. Missing required field or token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                
+                example:
+                  success: false
+                  message: "Missing Required Fields"
+
+        "401":
+          description: Given token invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                example:
+                  success: false
+                  message: "Invalid Token Provided"
+        
+        "403":
+          description: Attempting to delete your own account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                example:
+                  success: false
+                  message: "Cannot Delete User"
+
+        "404":
+          description: Failure to locate user to delete or failure on db operations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                example:
+                  success: false
+                  message: "User not Found"
+
+  /user/login:
+    post:
+      tags:
+        - "Authentication"
+      description: Authenticate a user with valid credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string 
+                password:
+                  type: string
+              required:
+                - "username"
+                - "password"
+      responses:
+        "200":
+          description: Successful Response. Includes token for authorization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+        "400":
+          description: Malformed request. Missing required fields on the body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "404":
+          description: Invalid credentials. Username not in db or password is incorrect 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  
+  /user/logout:    
+    post:
+      tags:
+        - "Authentication"
+      description: Invalidate given token
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful Response. Token cannot be used anymore.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                
+        "400":
+          description: Malformed request. Missing token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+                example:
+                  success: false
+                  message: "Missing Required Fields"
+        "401":
+          description: Given token invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+                example:
+                  success: false
+                  message: "Invalid Token Provided"
+          
 
 tags:
   - name: General
+  - name: Authentication
