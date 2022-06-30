@@ -1,4 +1,36 @@
 {
    "users": [
+      {
+         "username": "Sylvester",
+         "password": "Ehrenfest06",
+         "email": "sylvester@email.com",
+         "firstName": "Sylvester",
+         "lastName": "Ehrenfest",
+         "token": ""
+      },
+      {
+         "username": "Judithe",
+         "password": "Ehrenfest06",
+         "email": "sylvester@email.com",
+         "firstName": "Judithe",
+         "lastName": "Kirnbergerr",
+         "token": ""
+      },
+      {
+         "username": "Damuel",
+         "password": "Ehrenfest06",
+         "email": "sylvester@email.com",
+         "firstName": "Damuel",
+         "lastName": "Bernett",
+         "token": ""
+      },
+      {
+         "username": "Angelica",
+         "password": "Ehrenfest06",
+         "email": "sylvester@email.com",
+         "firstName": "Angelica",
+         "lastName": "Linkberg",
+         "token": ""
+      }
    ]
 }

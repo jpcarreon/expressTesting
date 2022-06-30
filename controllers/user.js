@@ -88,7 +88,6 @@ exports.createUser = (req, res) => {
  * - Updates User entity fields
  */
 exports.updateUser = (req, res) => {
-
     var id = req.body.username;
     let token = req.header('Authorization');
 
@@ -196,7 +195,7 @@ exports.loginUser = (req, res) => {
     file['users'][foundUser]['token'] = token;
 
     if (!utils.updateDB(file)) 
-        return res.status(500).send({ 'success': false })
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
 
     res.status(200).send({
         'success': true,
