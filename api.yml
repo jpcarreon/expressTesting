@@ -30,7 +30,6 @@ components:
           example: false
         message:
           type: string
-          example: Missing required field/s
     User:
       description: User entity schema
       properties:
@@ -59,13 +58,13 @@ components:
       bearerFormat: JWT
 
 paths:
-  /user/{id}:
+  /user/:
     get:
       tags:
         - "General"
       description: Returns a User entity with the matching username
       parameters:
-        - in: path
+        - in: query
           name: username 
           required: true
           schema:
@@ -112,7 +111,7 @@ paths:
               example:
                 success: false
                 message: Search returned no matching results
-  /user/:
+
     post:
       tags:
         - "General"
@@ -232,36 +231,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommonError"
+
               example:
                 success: false
-                message: "Missing required field/s"
+                message: "Missing Required Fields"
+
         "401":
           description: Given token invalid. Operation unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommonError"
+                
               example:
                 success: false
-                message: Operation unauthorized. Failed to process request
+                message: "Invalid Token Provided"
+        
         "403":
           description: Attempting to delete your own account.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommonError"
+
               example:
                 success: false
-                message: "Cannot delete logged-in User"
+                message: "Cannot Delete User"
+
         "404":
           description: Failure to locate user to delete or failure on db operations.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommonError"
+
               example:
                 success: false
-                message: "User not found. Cannot delete with no matches."
+                message: "User not Found"
 
   /user/login:
     post:
@@ -287,34 +293,27 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  token:
-                    type: string
+                $ref: "#/components/schemas/SuccessfulResponseMessage"
         "400":
           description: Malformed request. Missing required fields on the body.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
+                $ref: "#/components/schemas/CommonError"
+
+              example:
+                success: false
+                message: "Missing Required Fields"
         "404":
           description: Invalid credentials. Username not in db or password is incorrect 
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
+                $ref: "#/components/schemas/CommonError"
+
+              example:
+                success: false
+                message: "User not Found"
   
   /user/logout:    
     post:
@@ -329,41 +328,28 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: "#/components/schemas/SuccessfulResponseMessage"
                 
         "400":
           description: Malformed request. Missing token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
+                $ref: "#/components/schemas/CommonError"
 
-                example:
-                  success: false
-                  message: "Missing Required Fields"
+              example:
+                success: false
+                message: "Missing Required Fields"
         "401":
           description: Given token invalid.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
+                $ref: "#/components/schemas/CommonError"
 
-                example:
-                  success: false
-                  message: "Invalid Token Provided"
+              example:
+                success: false
+                message: "Invalid Token Provided"
           
 
 tags:
