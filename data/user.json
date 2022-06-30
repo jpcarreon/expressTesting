@@ -1,29 +1,4 @@
 {
    "users": [
-      {
-         "username": "Sylvester",
-         "password": "Ehrenfest06",
-         "token": ""
-      },
-      {
-         "username": "Maria",
-         "password": "Santos"
-      },
-      {
-         "username": "marsmaki",
-         "password": "Maria1234",
-         "email": "loremipsum@email.com",
-         "firstName": "Maria",
-         "lastName": "Makiling",
-         "token": ""
-      },
-      {
-         "username": "marsmaki1",
-         "password": "Maria1234",
-         "email": "loremipsum@email.com",
-         "firstName": "Maria",
-         "lastName": "Makiling",
-         "token": ""
-      }
    ]
 }
