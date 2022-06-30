@@ -1,0 +1,100 @@
+openapi: '3.0.3'
+
+info:
+  title: Sample-API-Backend
+  version: '1.0'
+
+servers:
+  - url: http://localhost:3001
+    description: Local Development Server
+
+components:
+  schemas:
+    SuccessfulResponse:
+      properties:
+        success:
+          type: boolean 
+  
+
+paths:
+  /user/{id}:
+    get:
+      tags:
+        - "General"
+      description: Look for a user
+      parameters:
+        - in: path
+          name: username 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Response 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean 
+                  data:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      password:
+                        type: string
+        
+        '404':
+          description: ""
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean 
+                  message:
+                    type: string
+            
+                      
+  /user/:
+    post:
+      tags:
+        - "General"
+      description: Create a new User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string 
+              required:
+                - "username"
+                - "password"
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        "404":
+          description: Failed Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+tags:
+  - name: General
