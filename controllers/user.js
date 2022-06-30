@@ -36,11 +36,11 @@ exports.findUser = (req,res) => {
  */
 exports.createUser = (req, res) => {
     // check body values
-    if(req.body.username == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
-    if(req.body.password == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
-    if(req.body.email == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
-    if(req.body.firstName == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
-    if(req.body.lastName == null) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(!req.body.username) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(!req.body.password) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(!req.body.email) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(!req.body.firstName) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
+    if(!req.body.lastName) return res.status(400).send({ 'success': false, 'message': 'Missing field/s' });
 
     const newUser = {
         username: req.body.username,
