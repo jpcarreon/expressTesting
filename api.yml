@@ -15,8 +15,6 @@ components:
         success:
           type: boolean
           example: true
-        message:
-          type: string
     SuccessfulResponseReturn:
       properties:
         success:
@@ -133,7 +131,6 @@ paths:
                 $ref: "#/components/schemas/SuccessfulResponseMessage"
               example:
                 success: true
-                message: User added successfully 
         "400":
           description: Missing field/s
           content:
@@ -181,7 +178,6 @@ paths:
                 $ref: "#/components/schemas/SuccessfulResponseMessage"
               example:
                 success: true
-                message: User credentials updated successfully
         "400":
           description: Malformed request. Missing required field
           content:
@@ -230,7 +226,6 @@ paths:
                 $ref: "#/components/schemas/SuccessfulResponseMessage"
               example:
                 success: true
-                message: Successfully deleted User
         "400":
           description: Malformed request. Missing required field or token.
           content:
