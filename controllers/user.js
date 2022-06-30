@@ -18,11 +18,6 @@ exports.findUser = (req,res) => {
     const file = utils.openDB();
     if (!file) 
         return res.status(404).send({ 'success': false, 'message': 'Database error' });
-    
-    if (utils.findUser(file['users'], id) >= 0) {
-        console.log('Duplicate User!');
-        return res.status(409).send({ 'success': false, 'message': 'Duplicate user credentials' });
-    }
 
     // retrieve user index based on given id
     const index = utils.findUser(file['users'], id);
