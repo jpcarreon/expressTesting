@@ -14,33 +14,25 @@ const utils = require('./utils');
 exports.findUser = (req,res) => {
     var id = req.query.username;
     
-    function userFinder(currUser){  // compares primary key values
-        if(currUser.username == id){
-            return currUser;
-        }
+    // read DB content
+    const file = utils.openDB();
+    if (!file) 
+        return res.status(404).send({ 'success': false, 'message': 'Database error' });
+    
+    if (utils.findUser(file['users'], id) >= 0) {
+        console.log('Duplicate User!');
+        return res.status(409).send({ 'success': false, 'message': 'Duplicate user credentials' });
     }
 
-    // read DB content
-    fs.readFile(userDB, 'utf8', (err, data) => {
+    // retrieve user index based on given id
+    const index = utils.findUser(file['users'], id);
+    
+    // check if retrieved valid index
+    if (index == -1)
+        return res.status(404).send({ 'success': false, 'message': 'User not found' });
 
-        if (err) {
-            console.log(err);
-            return res.status(400).send({ 'success': false });
-        }
-        
-        // parse db to array of objects
-        var file = JSON.parse(data);
+    return res.status(200).send({ 'success': true, 'data': file['users'][index]});
 
-        // check match
-        var foundUser = file['users'].find(userFinder);
-
-        if(foundUser == null){
-            return res.send({ 'success': false });
-        }
-
-        return res.status(200).send({ 'success': true, 'data': foundUser});
-
-    });
 }
 
 /**
@@ -80,7 +72,7 @@ exports.createUser = (req, res) => {
     if (!utils.updateDB(file))
         return res.status(404).send({ 'success': false, 'message': 'Database error' });
     
-    res.status(201).send({ 'success': true, 'message': 'Successfully created user' });
+    res.status(201).send({ 'success': true });
 }
 
 /**
@@ -92,6 +84,7 @@ exports.updateUser = (req, res) => {
     var id = req.body.username;
     let token = req.header('Authorization');
 
+    // verify user token
     if (!token || !id) 
         return res.status(400).send({
             'success': false,
@@ -125,7 +118,7 @@ exports.updateUser = (req, res) => {
     if (!utils.updateDB(file))
         return res.status(404).send({ 'success': false, 'message': 'Database error' });
     
-    res.status(201).send({ 'success': true, 'message': 'Successfully updated user' });
+    res.status(201).send({ 'success': true });
 }
 
 exports.deleteUser = (req, res) => {
