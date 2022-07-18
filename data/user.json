@@ -6,30 +6,30 @@
          "email": "sylvester@email.com",
          "firstName": "Sylvester",
          "lastName": "Ehrenfest",
-         "token": ""
+         "token": "eyJhbGciOiJIUzI1NiJ9.U3lsdmVzdGVy.6QJR6sRcU2lHLsMpEhUS6fDSnfjSVH3sME8hBs33LB0"
       },
       {
          "username": "Judithe",
          "password": "Ehrenfest06",
-         "email": "sylvester@email.com",
+         "email": "judithe@email.com",
          "firstName": "Judithe",
          "lastName": "Kirnbergerr",
          "token": ""
       },
       {
-         "username": "Damuel",
+         "username": "Angelica",
          "password": "Ehrenfest06",
-         "email": "sylvester@email.com",
-         "firstName": "Damuel",
-         "lastName": "Bernett",
+         "email": "angelica@email.com",
+         "firstName": "Angelica",
+         "lastName": "Linkberg",
          "token": ""
       },
       {
-         "username": "Angelica",
-         "password": "Ehrenfest06",
-         "email": "sylvester@email.com",
-         "firstName": "Angelica",
-         "lastName": "Linkberg",
+         "username": "Damuel",
+         "password": "e",
+         "email": "new email",
+         "firstName": "e",
+         "lastName": "e",
          "token": ""
       }
    ]

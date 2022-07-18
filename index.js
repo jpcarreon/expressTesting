@@ -5,3 +5,5 @@ const App = require('./app.js');
 
 // start server
 App.start();
+
+module.exports = App;
