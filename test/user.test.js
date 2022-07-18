@@ -7,8 +7,6 @@ require('dotenv').config();
 chai.use(chaiHttp);
 start();
 
-console.log(`${process.env.SERVER_PORT | 4001}`)
-
 describe('Regular Employee', () => {
     describe('[GET] /eps/employee/{empid}', () => {
         it('GET someone else (403)', (done) => {

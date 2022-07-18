@@ -22,7 +22,7 @@ exports.start = () => {
     App.use('/', Router); // http://localhost:3001/
 
     // start server at port
-    App.listen(3001, (err) => {
+    App.listen(process.env.SERVER_PORT, (err) => {
         if (err) { console.log(err) }
         else {console.log('Server started at port 3001')}
     })
