@@ -12,7 +12,7 @@ describe('Regular Employee', () => {
             chai.request('localhost:3001')
                 .get('/user')
                 .end((err, response) => {
-                    assert.equal(response.statusCode, 404);
+                    assert.equal(response.statusCode, 200);
                     assert.isFalse(response.body.success);
 
                     done();
