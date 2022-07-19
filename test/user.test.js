@@ -9,7 +9,7 @@ start();
 
 describe('Regular Employee', () => {
     describe('[GET] /eps/employee/{empid}', () => {
-        it('GET someone else (403)', (done) => {
+        it('GET someone else (404)', (done) => {
             chai.request('localhost:3001')
                 .get('/user')
                 .end((err, response) => {
