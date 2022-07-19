@@ -13,6 +13,8 @@ const utils = require('./utils');
  */
 exports.findUser = (req,res) => {
     var id = req.query.username;
+
+    return res.status(400).send("ERROR");
     
     // read DB content
     const file = utils.openDB();
